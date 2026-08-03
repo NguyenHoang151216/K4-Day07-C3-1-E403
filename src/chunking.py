@@ -145,9 +145,9 @@ def compute_similarity(vec_a: list[float], vec_b: list[float]) -> float:
     return dot_product / (mag_a * mag_b)
 
 
-class LawClauseChunker:
+class ShopeePolicyChunker:
     """
-    Chiến lược Custom (TUANANH): Cắt văn bản theo từng Khoản (vd: "1. ", "2. ") trong văn bản luật.
+    Chiến lược Custom (TUANANH): Cắt văn bản chính sách Shopee theo từng Mục (vd: "1. ", "2. ").
     """
     def chunk(self, text: str) -> list[str]:
         if not text:
@@ -155,13 +155,9 @@ class LawClauseChunker:
         
         # Split by Clause pattern: newline followed by a number and a dot, e.g., "\n1. "
         # Regex uses positive lookahead to keep the number with the content
-        parts = re.split(r'(?=\n\d+\. )', "\n" + text)
+        parts = re.split(r'(?=\n\d+(?:\.\d+)*\. )', "\n" + text)
         
-        chunks = []
-        for p in parts:
-            p = p.strip()
-            if p:
-                chunks.append(p)
+        chunks = [p.strip() for p in parts if p.strip()]
                 
         return chunks if chunks else [text]
 
@@ -172,7 +168,7 @@ class ChunkingStrategyComparator:
         fixed = FixedSizeChunker(chunk_size=chunk_size, overlap=20).chunk(text)
         sentences = SentenceChunker(max_sentences_per_chunk=3).chunk(text)
         recursive = RecursiveChunker(chunk_size=chunk_size).chunk(text)
-        law_clause = LawClauseChunker().chunk(text)
+        shopee_policy = ShopeePolicyChunker().chunk(text)
         
         def stats(chunks: list[str]) -> dict:
             if not chunks:
@@ -184,5 +180,5 @@ class ChunkingStrategyComparator:
             'fixed_size': stats(fixed),
             'by_sentences': stats(sentences),
             'recursive': stats(recursive),
-            'tuananh_law_clause': stats(law_clause)
+            'tuananh_shopee_policy': stats(shopee_policy)
         }

@@ -325,5 +325,16 @@ class TestEmbeddingStoreDeleteDocument(unittest.TestCase):
         self.assertLess(size_after, size_before)
 
 
+class TestShopeePolicyChunker(unittest.TestCase):
+    def test_shopee_policy_chunker_splits_sections(self):
+        text = "Mục 1. Test\n1. Khoản một nội dung.\n2. Khoản hai nội dung."
+        from src.chunking import ShopeePolicyChunker
+        chunks = ShopeePolicyChunker().chunk(text)
+        self.assertIsInstance(chunks, list)
+        self.assertGreaterEqual(len(chunks), 2)
+        self.assertTrue(chunks[0].startswith("Mục 1. Test\n1."))
+        self.assertTrue(chunks[1].startswith("2."))
+
+
 if __name__ == "__main__":
     unittest.main()

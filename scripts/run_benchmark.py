@@ -6,7 +6,7 @@ import json
 # Thêm thư mục gốc vào path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from src.chunking import LawClauseChunker, ChunkingStrategyComparator
+from src.chunking import ShopeePolicyChunker, ChunkingStrategyComparator
 from src.store import EmbeddingStore
 from src.agent import KnowledgeBaseAgent
 from src.models import Document
@@ -28,18 +28,18 @@ def read_md_with_frontmatter(filepath):
     return {}, content
 
 def main():
-    data_dir = r"d:\VinUni\K4-Day07-C3-1-E403\data\nghidinh168"
+    data_dir = r"d:\VinUni\K4-Day07-C3-1-E403\data\shopee"
     
     store = EmbeddingStore()
-    chunker = LawClauseChunker()
+    chunker = ShopeePolicyChunker()
     
-    print("1. Đang nạp 55 file vào Embedding Store...")
+    print("1. Đang nạp 10 file vào Embedding Store...")
     for filename in os.listdir(data_dir):
         if filename.endswith(".md"):
             filepath = os.path.join(data_dir, filename)
             metadata, text = read_md_with_frontmatter(filepath)
             
-            # Chunk the text using our custom LawClauseChunker
+            # Chunk the text using our custom ShopeePolicyChunker
             chunks = chunker.chunk(text)
             
             # Add to store
@@ -53,23 +53,23 @@ def main():
     print(f"Hoàn thành! Kích thước kho dữ liệu: {store.get_collection_size()} chunks.")
     
     # 2. Run ChunkingStrategyComparator on one big file to get baseline stats
-    print("\n2. Phân tích đường cơ sở (Baseline Analysis) trên Điều 5...")
-    _, text_art_5 = read_md_with_frontmatter(os.path.join(data_dir, "art_5.md"))
+    print("\n2. Phân tích đường cơ sở (Baseline Analysis) trên Mục 4...")
+    _, text_art_5 = read_md_with_frontmatter(os.path.join(data_dir, "section_4.md"))
     
     comparator = ChunkingStrategyComparator()
     stats = comparator.compare(text_art_5, chunk_size=200)
     
-    print("Baseline Stats (Điều 5):")
+    print("Baseline Stats (Mục 4):")
     for strategy, info in stats.items():
         print(f"  - {strategy}: {info['count']} chunks, độ dài TB: {info['avg_length']:.2f} chars")
 
     # 3. Query tests
     queries = [
-        {"q": "Hành vi điều khiển xe chạy quá tốc độ quy định bị phạt bao nhiêu tiền?", "filter": None},
-        {"q": "Người đi bộ vượt đèn đỏ bị phạt bao nhiêu?", "filter": None},
-        {"q": "Thẩm quyền lập biên bản vi phạm hành chính thuộc về ai?", "filter": {"category": "traffic_law"}},
-        {"q": "Hình thức xử phạt bổ sung bao gồm những gì?", "filter": {"category": "traffic_law"}},
-        {"q": "Xe máy điện chở quá số người quy định bị phạt như thế nào?", "filter": None},
+        {"q": "Đối tượng nào được áp dụng chính sách trả hàng hoàn tiền?", "filter": None},
+        {"q": "Trả hàng COM là gì?", "filter": None},
+        {"q": "Người mua có bao nhiêu ngày để gửi yêu cầu trả hàng?", "filter": {"category": "returns"}},
+        {"q": "Ai phải chịu phí vận chuyển trả hàng?", "filter": {"category": "returns"}},
+        {"q": "Thời gian giải quyết yêu cầu trả hàng là bao lâu?", "filter": None},
     ]
 
     def mock_llm(prompt: str) -> str:
