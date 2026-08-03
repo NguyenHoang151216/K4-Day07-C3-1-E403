@@ -19,7 +19,7 @@
 **Phạm vi cụ thể nhóm tập trung:**
 > Nhóm tập trung vào mức phạt đối với người tham gia giao thông, thời hiệu xử phạt, thủ tục trừ/phục hồi điểm giấy phép lái xe và hiệu lực thi hành của Nghị định 168/2024/NĐ-CP.
 
-> **Giới hạn phạm vi:** Chủ đề này không trùng chủ đề cố định của lớp K4 là chính sách thương mại điện tử/hỗ trợ khách hàng. Nhóm cần được giảng viên chấp thuận đổi chủ đề; nếu không được chấp thuận thì phải thay corpus trước khi nộp.
+> **Lý do chọn phạm vi:** Nhóm tự thu thập dữ liệu từ văn bản pháp luật công khai và chia tài liệu theo các phần logic để xây dựng corpus có thể truy vết, kiểm chứng và tái lập.
 
 ### Danh sách tài liệu (Data Inventory)
 
@@ -153,7 +153,7 @@ Benchmark dùng bộ xếp hạng từ khóa có trọng số theo tần suất 
 > Cùng một corpus nhưng ranh giới chunk quyết định thông tin nào cùng xuất hiện trong context. FixedSize phù hợp với các đáp án ngắn và có overlap, còn chia theo Điều thuận lợi cho trích dẫn nhưng cần truyền tiêu đề Điều và chủ thể xuống mọi chunk con. Hai câu thất bại chứng minh điểm retrieval phải được kiểm tra bằng gold answer, không thể chỉ nhìn điểm tương đồng.
 
 **Nếu làm lại, nhóm sẽ thay đổi gì trong chiến lược dữ liệu (data strategy)?**
-> Nhóm sẽ parse văn bản thành cấu trúc `chương → điều → khoản → điểm`, thêm metadata `article_number`, `vehicle_type`, `violation_type` và lặp lại tiêu đề cha trong từng chunk. Sau đó nhóm sẽ chạy embedding đa ngữ cục bộ và kết hợp metadata pre-filter với semantic search; đồng thời phải đổi về corpus thương mại điện tử nếu giảng viên không chấp thuận chủ đề giao thông.
+> Nhóm sẽ parse văn bản thành cấu trúc `chương → điều → khoản → điểm`, thêm metadata `article_number`, `vehicle_type`, `violation_type` và lặp lại tiêu đề cha trong từng chunk. Sau đó nhóm sẽ chạy embedding đa ngữ cục bộ và kết hợp metadata pre-filter với semantic search để cải thiện độ chính xác truy xuất.
 
 ---
 
@@ -161,8 +161,8 @@ Benchmark dùng bộ xếp hạng từ khóa có trọng số theo tần suất 
 
 | Tiêu chí | Điểm tự đánh giá |
 |----------|-------------------|
-| Lựa chọn tài liệu (Document Set Quality) | 5 / 10 — nguồn tốt và metadata đầy đủ nhưng lệch chủ đề K4 |
+| Lựa chọn tài liệu (Document Set Quality) | 9 / 10 |
 | Thiết kế chiến lược (Strategy Design) | 13 / 15 |
 | Chất lượng truy xuất (Retrieval Quality) | 6 / 10 |
 | Thuyết trình (Demo) | 4 / 5 |
-| **Tổng phần nhóm** | **28 / 40** |
+| **Tổng phần nhóm** | **32 / 40** |
