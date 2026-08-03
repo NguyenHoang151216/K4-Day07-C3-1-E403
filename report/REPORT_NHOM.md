@@ -1,7 +1,7 @@
 # Báo Cáo Nhóm — Lab 7: Embedding & Vector Store
 
 **Nhóm:** [C3-1]
-**Thành viên:** [Phan Đức Anh,Nguyễn Chí Hoàng]
+**Thành viên:** [Phan Đức Anh,Nguyễn Chí Hoàng,Phạm Tuấn Anh]
 **Ngày:** 03/08/2026
 
 > Phần kỹ thuật và số liệu đã được tạo từ mã nguồn trong repo. Nhóm chỉ cần bổ sung thông tin nhận diện và gán tên thành viên cho từng chiến lược trước khi nộp.
