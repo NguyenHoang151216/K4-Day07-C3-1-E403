@@ -1,128 +1,98 @@
 # Báo Cáo Cá Nhân — Lab 7: Embedding & Vector Store
 
-**Họ tên:** [Tên sinh viên]
-**Nhóm:** [Tên nhóm]
-**Ngày:** [Ngày nộp]
+**Họ tên:** [Nguyễn Chí Hoàng]
+**Nhóm:** [C3-1]
+**Ngày:** 03/08/2026
 
-> **Nộp 1 bản / sinh viên.** Phần nhóm (lựa chọn tài liệu, thiết kế chiến lược, bộ câu hỏi đánh giá, demo) nộp chung 1 bản trong `REPORT_NHOM.md`. Chi tiết thang điểm: `docs/SCORING.md`.
+## 1. Khởi động — 5 điểm
 
-**Tổng điểm phần cá nhân: 60** = Khởi động (5) + Hướng tiếp cận (10) + Hoàn thiện code (30) + Dự đoán độ tương tự (5) + Kết quả truy xuất của tôi (10).
+Cosine similarity đo góc giữa hai vector. Điểm gần 1 nghĩa là hai vector cùng hướng, gần 0 là ít liên hệ theo biểu diễn, và gần -1 là ngược hướng. So với Euclidean distance, cosine ít bị ảnh hưởng bởi độ lớn vector nên phù hợp khi hướng vector mang ý nghĩa chính.
 
----
+- Ví dụ cao: “bảo vệ dữ liệu cá nhân” và “quy định bảo vệ dữ liệu cá nhân”; hai câu chia sẻ chủ đề và các đặc trưng chính.
+- Ví dụ thấp: “quyền người tiêu dùng” và “cách nấu phở bò”; hai câu khác chủ đề.
 
-## 1. Khởi động (Warm-up) — Cá nhân (5 điểm)
+Với tài liệu 10.000 ký tự, `chunk_size=500`, `overlap=50`, bước nhảy là 450:
 
-### Độ tương tự Cosine (Cosine Similarity) (Bài tập 1.1)
+`ceil((10000 - 500) / 450) + 1 = 23 chunks`.
 
-**Độ tương tự cosine cao (High cosine similarity) nghĩa là gì?**
-> *Viết 1-2 câu:*
+Khi overlap tăng lên 100, bước nhảy còn 400 và số chunk là:
 
-**Ví dụ có độ tương tự CAO:**
-- Câu A:
-- Câu B:
-- Tại sao tương đồng:
+`ceil((10000 - 500) / 400) + 1 = 25 chunks`.
 
-**Ví dụ có độ tương tự THẤP:**
-- Câu A:
-- Câu B:
-- Tại sao khác:
+Overlap lớn hơn giảm nguy cơ mất thông tin ở biên nhưng tăng số vector, chi phí tìm kiếm và kết quả gần trùng.
 
-**Tại sao độ tương tự cosine (cosine similarity) được ưu tiên hơn khoảng cách Euclid (Euclidean distance) cho text embeddings?**
-> *Viết 1-2 câu:*
+## 2. Hướng tiếp cận — 10 điểm
 
-### Bài toán tính toán Chunking (Bài tập 1.2)
+### Chunking
 
-**Tài liệu 10,000 ký tự, chunk_size=500, overlap=50. Bao nhiêu chunks?**
-> *Trình bày phép tính:*
-> *Đáp án:*
+`SentenceChunker` dùng regex tách sau `.`, `!`, `?` hoặc xuống dòng, giữ dấu câu và loại đoạn rỗng. Các câu được gom theo `max_sentences_per_chunk`.
 
-**Nếu độ chồng chéo (overlap) tăng lên 100, số lượng chunk thay đổi thế nào? Tại sao muốn độ chồng chéo nhiều hơn?**
-> *Viết 1-2 câu:*
+`RecursiveChunker` thử separator theo thứ tự đoạn văn, dòng, câu, từ và ký tự. Base case là đoạn đã không vượt `chunk_size`; khi hết separator, thuật toán cắt theo ký tự để bảo đảm kết thúc. Separator được gắn lại để hạn chế thay đổi nội dung nguồn.
 
----
+`FixedSizeChunker` kiểm tra `chunk_size > 0`, `overlap >= 0` và `overlap < chunk_size` để tránh vòng lặp hoặc cấu hình vô nghĩa.
 
-## 2. Hướng tiếp cận của tôi (My Approach) — Cá nhân (10 điểm)
+### EmbeddingStore
 
-Giải thích cách tiếp cận của bạn khi lập trình (implement) các phần chính trong gói `src`.
+Mỗi record lưu `id`, `content`, bản sao `metadata`, vector và chỉ số chèn. `search` nhúng query, tính cosine với từng record, sắp giảm dần và lấy top-k. In-memory backend là contract mặc định để test tái lập.
 
-### Các hàm chia nhỏ (Chunking Functions)
+`search_with_filter` lọc metadata trước khi tính similarity, giảm candidate và tránh lộ context sai đối tượng. `delete_document` xóa mọi chunk có cùng `metadata.doc_id`.
 
-**`SentenceChunker.chunk`** — hướng tiếp cận:
-> *Viết 2-3 câu: dùng biểu thức chính quy (regex) gì để phát hiện câu? Xử lý trường hợp ngoại lệ (edge case) nào?*
+### KnowledgeBaseAgent
 
-**`RecursiveChunker.chunk` / `_split`** — hướng tiếp cận:
-> *Viết 2-3 câu: thuật toán hoạt động thế nào? Base case (trường hợp cơ sở) là gì?*
+Agent retrieve top-k, tạo context block có `source`, `doc_id`, `chunk_index`, sau đó yêu cầu generator chỉ dùng bằng chứng và gắn citation `[n]`. Store rỗng được xử lý bằng câu trả lời từ chối; `metadata_filter` được truyền trực tiếp vào retrieval.
 
-### Lớp EmbeddingStore
+`main.py` có offline extractive generator để demo không cần API. Generator chỉ chọn câu từ context, không tự sáng tác. Với production cần thay bằng LLM thật và tiếp tục giữ prompt grounding/citation.
 
-**`add_documents` + `search`** — hướng tiếp cận:
-> *Viết 2-3 câu: lưu trữ thế nào? Tính độ tương tự ra sao?*
+## 3. Hoàn thiện code — 30 điểm
 
-**`search_with_filter` + `delete_document`** — hướng tiếp cận:
-> *Viết 2-3 câu: lọc (filter) trước hay sau? Xóa bằng cách nào?*
+Kết quả chạy trong virtual environment:
 
-### Tác tử KnowledgeBaseAgent
-
-**`answer`** — hướng tiếp cận:
-> *Viết 2-3 câu: cấu trúc prompt? Cách đưa ngữ cảnh (inject context) vào thế nào?*
-
----
-
-## 3. Hoàn thiện code (Core Implementation) — Cá nhân (30 điểm)
-
-Vượt qua bộ kiểm thử là điều kiện tính điểm phần này.
-
-### Kết Quả Kiểm Thử (Test Results)
-
-```
-# Dán kết quả (output) của: pytest tests/ -v
+```text
+platform win32 -- Python 3.14.0, pytest-9.1.1
+collected 53 items
+..................................................... [100%]
+53 passed in 0.06s
 ```
 
-**Số lượng bài test vượt qua (pass):** __ / 42
+Trong đó gồm **42/42 test bắt buộc** và **11 test hardening** cho validation, filter nhiều trường, xóa nhiều chunk, store rỗng và hashing embedder.
 
----
+## 4. Dự đoán độ tương tự — 5 điểm
 
-## 4. Dự đoán độ tương tự (Similarity Predictions) — Cá nhân (5 điểm)
+Các điểm dưới đây dùng `HashingEmbedder(512)`, vì vậy phản ánh trùng khớp từ/cặp từ, không phải mức tương đồng ngữ nghĩa của mô hình transformer.
 
-| Cặp | Câu A | Câu B | Dự đoán | Điểm thực tế | Đúng? |
-|------|-----------|-----------|---------|--------------|-------|
-| 1 | | | cao / thấp | | |
-| 2 | | | cao / thấp | | |
-| 3 | | | cao / thấp | | |
-| 4 | | | cao / thấp | | |
-| 5 | | | cao / thấp | | |
+| # | Câu A | Câu B | Dự đoán | Điểm |
+|---|---|---|---|---:|
+| 1 | bảo vệ dữ liệu cá nhân | quy định bảo vệ dữ liệu cá nhân | cao | 0.8563 |
+| 2 | nền tảng số trung gian | trách nhiệm của nền tảng số trung gian | cao | 0.7746 |
+| 3 | thương lượng khiếu nại | thời hạn thương lượng khiếu nại | cao | 0.7977 |
+| 4 | quyền người tiêu dùng | cách nấu phở bò | thấp | 0.0000 |
+| 5 | mua sắm xuyên biên giới | nền tảng xuyên biên giới chưa đăng ký | trung bình | 0.4303 |
 
-**Kết quả nào bất ngờ nhất? Điều này nói gì về cách embeddings biểu diễn ý nghĩa?**
-> *Viết 2-3 câu:*
+Điểm đáng chú ý là các câu đồng nghĩa nhưng không dùng chung từ có thể nhận điểm thấp. Đây là giới hạn của hashing lexical và là lý do nên chạy lại benchmark bằng multilingual embedding trước khi đưa hệ thống vào thực tế.
 
----
+## 5. Kết quả truy xuất cá nhân — 10 điểm
 
-## 5. Kết quả truy xuất của tôi (Competition Results) — Cá nhân (10 điểm)
+Cấu hình: `HashingEmbedder(512)`, FixedSizeChunker 500 ký tự, overlap 50, top-k=3.
 
-Chạy **5 câu hỏi đánh giá của nhóm** trên mã nguồn cá nhân của bạn trong gói `src`. **5 câu hỏi này phải trùng với các thành viên cùng nhóm** (xem `REPORT_NHOM.md`).
+| # | Top-1 document | Score | Evidence rank | Kết quả |
+|---|---|---:|---:|---|
+| 1 | `ecommerce-law-2025` | 0.465109 | 1 | đủ ngày hiệu lực, số chương và điều |
+| 2 | `ecommerce-decree-248-2026` | 0.392618 | 1 | đủ ngày ban hành và hiệu lực |
+| 3 | `consumer-rights-2023` | 0.512316 | 1 | đủ hai quyền mới |
+| 4 | `platform-responsibilities` | 0.392643 | 2 | cần thêm chunk thứ hai để đủ chi tiết |
+| 5 | `consumer-negotiation-and-data` | 0.192411 | 2 | cần hai chunk để tổng hợp mốc 7 và 5 ngày |
 
-| # | Câu hỏi (Query) | Top-1 Chunk truy xuất được (tóm tắt) | Điểm Score | Có liên quan không? (Relevant) | Câu trả lời của Agent (tóm tắt) |
-|---|-------|--------------------------------|-------|-----------|------------------------|
-| 1 | | | | | |
-| 2 | | | | | |
-| 3 | | | | | |
-| 4 | | | | | |
-| 5 | | | | | |
+Kết quả: **5/5 query có đủ evidence trong top-3**, Hit@1 60%, Hit@3 100%, MRR 0.800, retrieval score 8/10. Offline generator tạo câu trả lời trích xuất có citation; kết quả chi tiết nằm trong `evaluation/results_hashing_fixed.md`.
 
-**Bao nhiêu câu hỏi trả về chunk có liên quan trong top-3?** __ / 5
+Bài học quan trọng nhất là phải đánh giá evidence ở mức chunk thay vì chỉ kiểm tra document ID. Ngoài ra, metadata filter cải thiện precision rõ rệt cho câu hỏi chỉ dành cho buyer/seller.
 
-**Điều hay nhất tôi học được từ thành viên khác / nhóm khác (qua demo):**
-> *Viết 2-3 câu:*
+## Tự đánh giá đề xuất
 
----
-
-## Tự Đánh Giá (Phần Cá Nhân)
-
-| Tiêu chí | Điểm tự đánh giá |
-|----------|-------------------|
-| Khởi động (Warm-up) | / 5 |
-| Hướng tiếp cận của tôi (My Approach) | / 10 |
-| Hoàn thiện code (Core Implementation — tests) | / 30 |
-| Dự đoán độ tương tự (Similarity Predictions) | / 5 |
-| Kết quả truy xuất của tôi (Competition Results) | / 10 |
-| **Tổng phần cá nhân** | **/ 60** |
+| Tiêu chí | Điểm |
+|---|---:|
+| Khởi động | 5/5 |
+| Hướng tiếp cận | 10/10 |
+| Core implementation | 30/30 |
+| Similarity predictions | 5/5 |
+| Retrieval | 8/10 |
+| **Tổng** | **58/60** |

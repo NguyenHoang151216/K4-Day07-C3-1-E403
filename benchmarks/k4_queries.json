@@ -1,0 +1,42 @@
+[
+  {
+    "id": "q1",
+    "query": "Luật Thương mại điện tử 2025 có hiệu lực khi nào và gồm bao nhiêu chương, điều?",
+    "metadata_filter": null,
+    "expected_doc_ids": ["ecommerce-law-2025"],
+    "required_terms": ["01/07/2026", "7 chương", "41 điều"],
+    "gold_answer": "Luật số 122/2025/QH15 có hiệu lực từ ngày 01/07/2026, gồm 7 chương và 41 điều."
+  },
+  {
+    "id": "q2",
+    "query": "Nghị định 248/2026/NĐ-CP được ban hành ngày nào và có hiệu lực từ ngày nào?",
+    "metadata_filter": null,
+    "expected_doc_ids": ["ecommerce-decree-248-2026"],
+    "required_terms": ["30/06/2026", "01/07/2026"],
+    "gold_answer": "Nghị định được ban hành ngày 30/06/2026 và có hiệu lực từ ngày 01/07/2026."
+  },
+  {
+    "id": "q3",
+    "query": "Người tiêu dùng có những quyền mới nào liên quan đến tiêu dùng bền vững và giải quyết tranh chấp?",
+    "metadata_filter": {"customer_role": "buyer"},
+    "expected_doc_ids": ["consumer-rights-2023"],
+    "required_terms": ["lành mạnh", "bền vững", "thương lượng"],
+    "gold_answer": "Người tiêu dùng có quyền được tạo điều kiện lựa chọn môi trường tiêu dùng lành mạnh, bền vững và quyền yêu cầu tổ chức hoặc hỗ trợ thương lượng để giải quyết tranh chấp."
+  },
+  {
+    "id": "q4",
+    "query": "Nền tảng số trung gian phải công khai và minh bạch những nội dung gì để bảo vệ người tiêu dùng?",
+    "metadata_filter": {"customer_role": "seller"},
+    "expected_doc_ids": ["platform-responsibilities"],
+    "required_terms": ["đầu mối", "quy chế", "quảng cáo", "kiểm duyệt"],
+    "gold_answer": "Nền tảng phải công khai đầu mối làm việc với cơ quan nhà nước, công khai quy chế và phân định trách nhiệm, minh bạch quảng cáo, đồng thời cung cấp báo cáo kiểm duyệt và báo cáo theo yêu cầu."
+  },
+  {
+    "id": "q5",
+    "query": "Bên kinh doanh phải tiến hành thương lượng trong bao lâu và báo cáo kết quả trong bao lâu?",
+    "metadata_filter": {"category": "complaints"},
+    "expected_doc_ids": ["consumer-negotiation-and-data"],
+    "required_terms": ["7 ngày làm việc", "5 ngày làm việc"],
+    "gold_answer": "Phải tiến hành thương lượng trong 7 ngày làm việc từ khi nhận yêu cầu và thông báo bằng văn bản kết quả trong 5 ngày làm việc từ khi kết thúc thương lượng."
+  }
+]

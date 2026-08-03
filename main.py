@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -10,6 +11,7 @@ from ingest import build_knowledge_base
 from src.agent import KnowledgeBaseAgent
 from src.embeddings import (
     EMBEDDING_PROVIDER_ENV,
+    HashingEmbedder,
     LOCAL_EMBEDDING_MODEL,
     OPENAI_EMBEDDING_MODEL,
     LocalEmbedder,
@@ -23,28 +25,71 @@ DEFAULT_DATA_DIR = "data/k4_ecommerce"
 
 
 def _select_embedder():
-    """Chọn backend nhúng theo biến môi trường EMBEDDING_PROVIDER (mock | local | openai)."""
+    """Chọn backend nhúng (mock | hashing | local | openai)."""
     load_dotenv(override=False)
-    provider = os.getenv(EMBEDDING_PROVIDER_ENV, "mock").strip().lower()
+    provider = os.getenv(EMBEDDING_PROVIDER_ENV, "hashing").strip().lower()
+    if provider == "hashing":
+        return HashingEmbedder()
     if provider == "local":
         try:
             return LocalEmbedder(model_name=os.getenv("LOCAL_EMBEDDING_MODEL", LOCAL_EMBEDDING_MODEL))
         except Exception:
-            print("Local embedder không sẵn sàng; tạm dùng mock.")
-            return _mock_embed
+            print("Local embedder không sẵn sàng; tạm dùng hashing baseline.")
+            return HashingEmbedder()
     if provider == "openai":
         try:
             return OpenAIEmbedder(model_name=os.getenv("OPENAI_EMBEDDING_MODEL", OPENAI_EMBEDDING_MODEL))
         except Exception:
-            print("OpenAI embedder không sẵn sàng; tạm dùng mock.")
-            return _mock_embed
-    return _mock_embed
+            print("OpenAI embedder không sẵn sàng; tạm dùng hashing baseline.")
+            return HashingEmbedder()
+    if provider == "mock":
+        return _mock_embed
+    print(f"Embedding provider '{provider}' không hợp lệ; tạm dùng hashing baseline.")
+    return HashingEmbedder()
 
 
 def demo_llm(prompt: str) -> str:
-    """LLM giả lập đơn giản để thử RAG thủ công."""
-    preview = prompt[:400].replace("\n", " ")
-    return f"[DEMO LLM] Generated answer from prompt preview: {preview}..."
+    """Dependency-free extractive generator for the manual demo.
+
+    It deliberately copies only retrieved sentences and adds citations.  This
+    is not a replacement for a generative LLM, but is a safer offline fallback
+    than returning a fabricated answer.
+    """
+    question_match = re.search(r"CÂU HỎI:\n(.*?)\n\nTRẢ LỜI:", prompt, re.DOTALL)
+    question = question_match.group(1) if question_match else ""
+    query_terms = {
+        token for token in re.findall(r"\w+", question.casefold(), re.UNICODE) if len(token) > 2
+    }
+    blocks = re.findall(
+        r"\[(\d+)\] source=.*?\n(.*?)(?=\n\n\[\d+\] source=|\n\nCÂU HỎI:)",
+        prompt,
+        re.DOTALL,
+    )
+    candidates: list[tuple[int, int, str]] = []
+    for citation, content in blocks:
+        for sentence in re.split(r"(?<=[.!?])\s+|\n+", content):
+            sentence = sentence.strip(" #")
+            if not sentence:
+                continue
+            sentence_terms = set(re.findall(r"\w+", sentence.casefold(), re.UNICODE))
+            overlap = len(query_terms & sentence_terms)
+            if overlap:
+                candidates.append((overlap, int(citation), sentence))
+    candidates.sort(key=lambda item: item[0], reverse=True)
+
+    selected: list[str] = []
+    seen: set[str] = set()
+    for _, citation, sentence in candidates:
+        normalized = sentence.casefold()
+        if normalized in seen:
+            continue
+        selected.append(f"{sentence} [{citation}]")
+        seen.add(normalized)
+        if len(selected) == 3:
+            break
+    if not selected:
+        return "Không đủ thông tin trong ngữ cảnh được truy xuất để trả lời câu hỏi."
+    return " ".join(selected)
 
 
 def run_manual_demo(question: str | None = None, data_dir: str | None = None) -> int:

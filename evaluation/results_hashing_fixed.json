@@ -1,0 +1,236 @@
+{
+  "configuration": {
+    "data_dir": "data\\k4_ecommerce",
+    "benchmark": "benchmarks\\k4_queries.json",
+    "provider": "hashing",
+    "backend": "hashing lexical embeddings (512d)",
+    "strategy": "fixed",
+    "chunk_size": 500,
+    "top_k": 3,
+    "collection_size": 14
+  },
+  "metrics": {
+    "queries": 5,
+    "hit_at_1": 0.6,
+    "hit_at_3": 1.0,
+    "mrr": 0.8,
+    "retrieval_score": 8,
+    "retrieval_score_max": 10
+  },
+  "results": [
+    {
+      "id": "q1",
+      "query": "Luật Thương mại điện tử 2025 có hiệu lực khi nào và gồm bao nhiêu chương, điều?",
+      "metadata_filter": null,
+      "expected_doc_ids": [
+        "ecommerce-law-2025"
+      ],
+      "required_terms": [
+        "01/07/2026",
+        "7 chương",
+        "41 điều"
+      ],
+      "gold_answer": "Luật số 122/2025/QH15 có hiệu lực từ ngày 01/07/2026, gồm 7 chương và 41 điều.",
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "ecommerce-law-2025",
+          "chunk_index": 0,
+          "score": 0.465109,
+          "source_url": "https://moit.gov.vn/tin-tuc/lenh-cua-chu-tich-nuoc-cong-bo-luat-thuong-mai-dien-tu.html",
+          "preview": "# Khung pháp lý thương mại điện tử từ tháng 7/2026  Đây là bản tóm lược phục vụ truy xuất, được biên soạn từ thông tin công bố chính thức của Bộ Công Thương; khi áp dụng pháp lý cần đối chiếu toàn văn văn bản gốc.  Luật Thương mại điện tử s"
+        },
+        {
+          "rank": 2,
+          "doc_id": "ecommerce-decree-248-2026",
+          "chunk_index": 0,
+          "score": 0.377353,
+          "source_url": "https://moit.gov.vn/tin-tuc/bo-cong-thuong-pho-bien-luat-thuong-mai-dien-tu-va-nghi-dinh-so-248-2026-nd-cp.html",
+          "preview": "# Nghị định hướng dẫn Luật Thương mại điện tử  Đây là bản tóm lược từ bài phổ biến chính thức của Bộ Công Thương, không thay thế toàn văn nghị định.  Nghị định số 248/2026/NĐ-CP được ban hành ngày 30/06/2026 để quy định chi tiết một số điều"
+        },
+        {
+          "rank": 3,
+          "doc_id": "cross-border-shopping-safety",
+          "chunk_index": 0,
+          "score": 0.288475,
+          "source_url": "https://moit.gov.vn/tin-tuc/bao-chi-voi-nguoi-dan/bo-cong-thuong-canh-bao-nguoi-tieu-dung-ve-rui-ro-khi-mua-sam-tren-cac-nen-tang-tmdt-xuyen-bien-gioi-chua-dang-ky.html",
+          "preview": "# Cách kiểm tra nền tảng thương mại điện tử xuyên biên giới  Bộ Công Thương cảnh báo rằng với nền tảng thương mại điện tử xuyên biên giới chưa đăng ký, cơ quan chức năng gặp khó khăn trong việc giám sát trách nhiệm bảo đảm chất lượng và tín"
+        }
+      ],
+      "evidence_rank": 1,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "reciprocal_rank": 1.0,
+      "retrieval_score": 2
+    },
+    {
+      "id": "q2",
+      "query": "Nghị định 248/2026/NĐ-CP được ban hành ngày nào và có hiệu lực từ ngày nào?",
+      "metadata_filter": null,
+      "expected_doc_ids": [
+        "ecommerce-decree-248-2026"
+      ],
+      "required_terms": [
+        "30/06/2026",
+        "01/07/2026"
+      ],
+      "gold_answer": "Nghị định được ban hành ngày 30/06/2026 và có hiệu lực từ ngày 01/07/2026.",
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "ecommerce-decree-248-2026",
+          "chunk_index": 0,
+          "score": 0.392618,
+          "source_url": "https://moit.gov.vn/tin-tuc/bo-cong-thuong-pho-bien-luat-thuong-mai-dien-tu-va-nghi-dinh-so-248-2026-nd-cp.html",
+          "preview": "# Nghị định hướng dẫn Luật Thương mại điện tử  Đây là bản tóm lược từ bài phổ biến chính thức của Bộ Công Thương, không thay thế toàn văn nghị định.  Nghị định số 248/2026/NĐ-CP được ban hành ngày 30/06/2026 để quy định chi tiết một số điều"
+        },
+        {
+          "rank": 2,
+          "doc_id": "personal-data-protection",
+          "chunk_index": 0,
+          "score": 0.334681,
+          "source_url": "https://vanban.chinhphu.vn/default.aspx?docid=207759&pageid=27160",
+          "preview": "# Bảo vệ dữ liệu cá nhân  Nghị định số 13/2023/NĐ-CP của Chính phủ được ban hành ngày 17/04/2023 và có hiệu lực từ ngày 01/07/2023. Văn bản quy định về bảo vệ dữ liệu cá nhân tại Việt Nam.  Trong hệ thống thương mại điện tử, tài liệu này là"
+        },
+        {
+          "rank": 3,
+          "doc_id": "ecommerce-law-2025",
+          "chunk_index": 0,
+          "score": 0.26459,
+          "source_url": "https://moit.gov.vn/tin-tuc/lenh-cua-chu-tich-nuoc-cong-bo-luat-thuong-mai-dien-tu.html",
+          "preview": "# Khung pháp lý thương mại điện tử từ tháng 7/2026  Đây là bản tóm lược phục vụ truy xuất, được biên soạn từ thông tin công bố chính thức của Bộ Công Thương; khi áp dụng pháp lý cần đối chiếu toàn văn văn bản gốc.  Luật Thương mại điện tử s"
+        }
+      ],
+      "evidence_rank": 1,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "reciprocal_rank": 1.0,
+      "retrieval_score": 2
+    },
+    {
+      "id": "q3",
+      "query": "Người tiêu dùng có những quyền mới nào liên quan đến tiêu dùng bền vững và giải quyết tranh chấp?",
+      "metadata_filter": {
+        "customer_role": "buyer"
+      },
+      "expected_doc_ids": [
+        "consumer-rights-2023"
+      ],
+      "required_terms": [
+        "lành mạnh",
+        "bền vững",
+        "thương lượng"
+      ],
+      "gold_answer": "Người tiêu dùng có quyền được tạo điều kiện lựa chọn môi trường tiêu dùng lành mạnh, bền vững và quyền yêu cầu tổ chức hoặc hỗ trợ thương lượng để giải quyết tranh chấp.",
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "consumer-rights-2023",
+          "chunk_index": 0,
+          "score": 0.512316,
+          "source_url": "https://moit.gov.vn/tin-tuc/bao-chi-voi-nguoi-dan/mot-so-quy-dinh-moi-tai-luat-bao-ve-quyen-loi-nguoi-tieu-dung-nam-2023.html",
+          "preview": "# Quyền và nghĩa vụ của người tiêu dùng  Luật Bảo vệ quyền lợi người tiêu dùng năm 2023 có hiệu lực từ ngày 01/07/2024, gồm 7 chương và 80 điều. Luật mở rộng quy định cho các giao dịch đặc thù, bao gồm giao dịch từ xa và giao dịch trên khôn"
+        },
+        {
+          "rank": 2,
+          "doc_id": "consumer-rights-2023",
+          "chunk_index": 1,
+          "score": 0.250548,
+          "source_url": "https://moit.gov.vn/tin-tuc/bao-chi-voi-nguoi-dan/mot-so-quy-dinh-moi-tai-luat-bao-ve-quyen-loi-nguoi-tieu-dung-nam-2023.html",
+          "preview": "thời có nghĩa vụ cung cấp chính xác, đầy đủ thông tin liên quan đến giao dịch và tuân thủ các quy định về kiểm định, bảo vệ môi trường, tiêu dùng bền vững.  Trong giao dịch từ xa, bên kinh doanh phải cung cấp rõ các thông tin cần thiết cho "
+        },
+        {
+          "rank": 3,
+          "doc_id": "cross-border-shopping-safety",
+          "chunk_index": 1,
+          "score": 0.228584,
+          "source_url": "https://moit.gov.vn/tin-tuc/bao-chi-voi-nguoi-dan/bo-cong-thuong-canh-bao-nguoi-tieu-dung-ve-rui-ro-khi-mua-sam-tren-cac-nen-tang-tmdt-xuyen-bien-gioi-chua-dang-ky.html",
+          "preview": "g thương mại điện tử đã đăng ký tại Cổng thông tin quản lý hoạt động thương mại điện tử `online.gov.vn`. Người tiêu dùng cũng có thể liên hệ Tổng đài tư vấn, hỗ trợ người tiêu dùng của Bộ Công Thương theo số `1800.6838` để tham khảo thêm th"
+        }
+      ],
+      "evidence_rank": 1,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "reciprocal_rank": 1.0,
+      "retrieval_score": 2
+    },
+    {
+      "id": "q4",
+      "query": "Nền tảng số trung gian phải công khai và minh bạch những nội dung gì để bảo vệ người tiêu dùng?",
+      "metadata_filter": {
+        "customer_role": "seller"
+      },
+      "expected_doc_ids": [
+        "platform-responsibilities"
+      ],
+      "required_terms": [
+        "đầu mối",
+        "quy chế",
+        "quảng cáo",
+        "kiểm duyệt"
+      ],
+      "gold_answer": "Nền tảng phải công khai đầu mối làm việc với cơ quan nhà nước, công khai quy chế và phân định trách nhiệm, minh bạch quảng cáo, đồng thời cung cấp báo cáo kiểm duyệt và báo cáo theo yêu cầu.",
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "platform-responsibilities",
+          "chunk_index": 0,
+          "score": 0.392643,
+          "source_url": "https://moit.gov.vn/tin-tuc/bao-chi-voi-nguoi-dan/luat-bao-ve-quyen-loi-nguoi-tieu-dung-nam-2023-va-van-ban-huong-dan-luat-huong-toi-muc-tieu-nang-cao-trach-nhiem-bao-ve-.html",
+          "preview": "# Trách nhiệm bảo vệ người tiêu dùng của nền tảng  Luật Bảo vệ quyền lợi người tiêu dùng năm 2023 và Nghị định số 55/2024/NĐ-CP xác định trách nhiệm của các chủ thể trong giao dịch trên không gian mạng.  Đối với tổ chức thiết lập hoặc vận h"
+        },
+        {
+          "rank": 2,
+          "doc_id": "platform-responsibilities",
+          "chunk_index": 1,
+          "score": 0.194251,
+          "source_url": "https://moit.gov.vn/tin-tuc/bao-chi-voi-nguoi-dan/luat-bao-ve-quyen-loi-nguoi-tieu-dung-nam-2023-va-van-ban-huong-dan-luat-huong-toi-muc-tieu-nang-cao-trach-nhiem-bao-ve-.html",
+          "preview": " và phân định trách nhiệm của các bên; minh bạch hoạt động quảng cáo; cung cấp báo cáo về hoạt động kiểm duyệt nội dung; và báo cáo khi cơ quan nhà nước có thẩm quyền yêu cầu.  Thông tin này hữu ích cho người bán khi lựa chọn nền tảng và ki"
+        }
+      ],
+      "evidence_rank": 2,
+      "hit_at_1": false,
+      "hit_at_3": true,
+      "reciprocal_rank": 0.5,
+      "retrieval_score": 1
+    },
+    {
+      "id": "q5",
+      "query": "Bên kinh doanh phải tiến hành thương lượng trong bao lâu và báo cáo kết quả trong bao lâu?",
+      "metadata_filter": {
+        "category": "complaints"
+      },
+      "expected_doc_ids": [
+        "consumer-negotiation-and-data"
+      ],
+      "required_terms": [
+        "7 ngày làm việc",
+        "5 ngày làm việc"
+      ],
+      "gold_answer": "Phải tiến hành thương lượng trong 7 ngày làm việc từ khi nhận yêu cầu và thông báo bằng văn bản kết quả trong 5 ngày làm việc từ khi kết thúc thương lượng.",
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "consumer-negotiation-and-data",
+          "chunk_index": 1,
+          "score": 0.192411,
+          "source_url": "https://moit.gov.vn/tin-tuc/bao-chi-voi-nguoi-dan/mot-so-trach-nhiem-quan-trong-ve-bao-ve-quyen-loi-nguoi-tieu-dung-cua-cac-to-chuc-ca-nhan-phan-phoi-ban-le-hang-tieu-dun.html",
+          "preview": "dùng trong thời hạn 5 ngày làm việc kể từ ngày kết thúc thương lượng.  Tổ chức, cá nhân kinh doanh phải bảo đảm an toàn, an ninh đối với thông tin người tiêu dùng mà mình thu thập, lưu trữ, sử dụng, chỉnh sửa, cập nhật hoặc hủy bỏ. Nếu thuê"
+        },
+        {
+          "rank": 2,
+          "doc_id": "consumer-negotiation-and-data",
+          "chunk_index": 0,
+          "score": 0.170789,
+          "source_url": "https://moit.gov.vn/tin-tuc/bao-chi-voi-nguoi-dan/mot-so-trach-nhiem-quan-trong-ve-bao-ve-quyen-loi-nguoi-tieu-dung-cua-cac-to-chuc-ca-nhan-phan-phoi-ban-le-hang-tieu-dun.html",
+          "preview": "# Thời hạn thương lượng và trách nhiệm bảo vệ thông tin  Khi người tiêu dùng gửi yêu cầu thương lượng cùng thông tin, tài liệu liên quan nếu có, tổ chức hoặc cá nhân tiếp nhận phải tiếp nhận và tiến hành thương lượng trong thời hạn 7 ngày l"
+        }
+      ],
+      "evidence_rank": 2,
+      "hit_at_1": false,
+      "hit_at_3": true,
+      "reciprocal_rank": 0.5,
+      "retrieval_score": 1
+    }
+  ]
+}

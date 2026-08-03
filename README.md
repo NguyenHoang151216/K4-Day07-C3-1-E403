@@ -35,24 +35,30 @@ Phần bắt buộc được kiểm thử trên **Python 3.11**. Dùng đúng tr
 
 ```bash
 pip install -r requirements.txt
-pytest tests/ -v          # Phần lớn bài kiểm thử sẽ THẤT BẠI (chưa được lập trình)
+pytest tests/ -v          # Kỳ vọng toàn bộ bài kiểm thử vượt qua
 ```
 
-Mặc định, lab vẫn chạy với trình nhúng giả lập `_mock_embed` nên **không bắt buộc** cài đặt mô hình nhúng (embedder) thật.
+Mặc định, demo dùng `HashingEmbedder`, một baseline từ vựng không cần tải mô hình. `_mock_embed` vẫn được giữ riêng cho unit test.
 File `.env` được tự động nạp khi chạy `main.py`. Với các đoạn mã Python (snippet) chạy trực tiếp, hãy dùng lệnh `export` cho các biến môi trường cần thiết hoặc gọi hàm `load_dotenv()` nếu cần.
 
 > **Giai đoạn 2 (so sánh retrieval): đặt `EMBEDDING_PROVIDER=local`** để dùng trình nhúng đa ngữ (mô tả bên dưới). Mock sinh vector xác định nhưng **gần như ngẫu nhiên theo cả chuỗi** — chỉ hợp để chạy unit test, **không phản ánh chất lượng ngữ nghĩa** và không nên dùng để kết luận chiến lược chunking/tiếng Việt nào tốt hơn.
 
 ## Tùy Chọn Mô Hình Nhúng (Embedding Backend)
 
-### 1) Mặc định: Trình nhúng giả lập (Mock embedder)
+### 1) Mặc định: Trình nhúng từ vựng (Hashing embedder)
 
 Không cần cài gì thêm ngoài:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2) Tùy chọn: Trình nhúng đa ngữ cục bộ (Local multilingual embedder)
+Backend này ánh xạ từ và cặp từ vào vector xác định nên phù hợp làm baseline retrieval có thể tái lập. Đây không phải mô hình ngữ nghĩa; dùng local multilingual hoặc OpenAI để đánh giá chất lượng ngữ nghĩa.
+
+### 2) Kiểm thử: Trình nhúng giả lập (Mock embedder)
+
+`MockEmbedder` sinh vector xác định nhưng gần như ngẫu nhiên theo toàn chuỗi. Chỉ dùng backend này cho unit test và smoke test, không dùng để kết luận chất lượng retrieval.
+
+### 3) Tùy chọn: Trình nhúng đa ngữ cục bộ (Local multilingual embedder)
 
 ```bash
 pip install -r requirements-local.txt
@@ -67,7 +73,7 @@ PY
 - Gói `src` hỗ trợ mô hình `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`, phù hợp với kho ngữ liệu tiếng Việt, thông qua thư viện `sentence-transformers`.
 - Lần chạy đầu tiên, mô hình và thư viện phụ thuộc PyTorch sẽ được tải về; đây là phần **tùy chọn**, không cần thiết để làm các TODO hoặc chạy bài kiểm thử.
 
-### 3) Tùy chọn: Trình nhúng OpenAI (OpenAI embedder)
+### 4) Tùy chọn: Trình nhúng OpenAI (OpenAI embedder)
 
 ```bash
 pip install openai
@@ -88,8 +94,8 @@ export OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 
 ### Quy tắc dự phòng (fallback)
 
-- Nếu không chọn gì, lab mặc định dùng `_mock_embed`
-- Nếu chọn `local` hoặc `openai` nhưng thiết lập bị thiếu, mã nguồn sẽ tự động chuyển về dùng `_mock_embed`
+- Nếu không chọn gì, demo mặc định dùng `HashingEmbedder`
+- Nếu chọn `local` hoặc `openai` nhưng thiết lập bị thiếu, demo tự động chuyển về hashing baseline
 - Có thể cấu hình qua file `.env` mà không cần chạy lệnh `source .env`
 - File kịch bản `main.py` chạy từ đầu đến cuối và nhập (import) các API công khai từ gói `src`
 
@@ -220,6 +226,25 @@ Khi chạy đánh giá (benchmark), đừng chỉ hỏi **"code có chạy khôn
 > Xem `docs/EVALUATION.md` nếu bạn muốn một danh sách kiểm tra (checklist) chi tiết hơn cho phần này.
 
 ---
+
+## Kiểm Tra Corpus và Chạy Benchmark
+
+```bash
+python scripts/validate_corpus.py
+python evaluate.py --provider hashing --strategy fixed
+python evaluate.py --provider hashing --strategy sentence
+python evaluate.py --provider hashing --strategy recursive
+```
+
+Benchmark đọc 5 query và gold answer từ `benchmarks/k4_queries.json`. Kết quả có Hit@1, Hit@3, MRR, evidence rank và điểm retrieval. Evaluator chỉ tính đạt khi các chunk của đúng tài liệu thực sự bao phủ `required_terms`, không chỉ khi `doc_id` xuất hiện trong top-k.
+
+Để lưu báo cáo có thể nộp kèm:
+
+```bash
+python evaluate.py --provider hashing --strategy fixed --output evaluation/results_hashing_fixed.md
+```
+
+Các kết quả baseline cho ba chiến lược đã có trong thư mục `evaluation/`. Khi môi trường hỗ trợ mô hình đa ngữ, thay `--provider hashing` bằng `--provider local` để chạy lại đúng cùng benchmark.
 
 ## Chấm Điểm
 
