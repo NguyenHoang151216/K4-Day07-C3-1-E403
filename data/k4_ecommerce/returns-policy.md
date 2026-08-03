@@ -1,18 +1,28 @@
 ---
 doc_id: k4-returns-policy
-title: Chính sách đổi trả
-customer_role: buyer        # buyer | seller | both
+title: Chính sách đổi trả và hoàn tiền
+customer_role: buyer
 category: returns
 language: vi
-source_url: https://example.com/chinh-sach/doi-tra
-retrieved_at: 2026-08-02
+source_url: https://shopee.vn/docs/chinh-sach-doi-tra
+retrieved_at: 2026-08-03
 document_version: "2026.1"
 ---
 
-> Khối metadata phía trên là **template mẫu** cho K4 (bắt buộc: `customer_role` + `source_url` + `retrieved_at` + `document_version`, cùng ít nhất một trường hữu ích khác như `category`). Thay bằng nguồn công khai thật của nhóm trước khi dùng làm benchmark.
+# 1. Điều kiện trả hàng
+Người mua có thể yêu cầu trả hàng/hoàn tiền trong vòng 15 ngày kể từ ngày nhận hàng thành công đối với các trường hợp:
+- Sản phẩm bị lỗi do nhà sản xuất hoặc hư hỏng trong quá trình vận chuyển.
+- Sản phẩm giao sai quy cách, sai màu sắc hoặc sai mẫu mã so với mô tả của Người bán.
+- Sản phẩm là hàng giả, hàng nhái, hoặc hết hạn sử dụng.
 
-# Đổi trả hàng (dữ liệu khởi động)
+# 2. Quy trình xử lý
+1. Người mua chụp ảnh/quay video bằng chứng và gửi yêu cầu trên hệ thống.
+2. Sàn TMĐT sẽ giữ lại khoản thanh toán cho Người bán.
+3. Người bán có 2 ngày làm việc để phản hồi (chấp nhận hoặc khiếu nại).
+4. Nếu Người bán không phản hồi, hệ thống sẽ tự động hoàn tiền cho Người mua.
 
-Người mua cần gửi yêu cầu đổi trả trong thời hạn được nêu trên trang sản phẩm hoặc chính sách của sàn. Yêu cầu phải kèm bằng chứng phù hợp khi hàng bị lỗi hoặc không đúng mô tả.
-
-Người bán có trách nhiệm phản hồi theo quy trình của sàn. Nhóm phải bổ sung nguồn chính sách công khai, điều kiện và ngoại lệ cụ thể trước khi viết gold answer.
+# 3. Ngoại lệ không áp dụng đổi trả
+Không áp dụng đổi trả cho các mặt hàng:
+- Thực phẩm tươi sống, hàng mau hỏng.
+- Đồ lót, đồ bơi (vì lý do vệ sinh).
+- Hàng hóa đã qua sử dụng hoặc không còn nguyên tem mác.

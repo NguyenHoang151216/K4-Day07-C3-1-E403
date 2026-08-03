@@ -15,7 +15,7 @@
 ### Độ tương tự Cosine (Cosine Similarity) (Bài tập 1.1)
 
 **Độ tương tự cosine cao (High cosine similarity) nghĩa là gì?**
-> *Viết 1-2 câu:*
+> Hai văn bản có cùng hướng vector, tức là có chung chủ đề, chung mặt ngữ nghĩa (semantic meaning) dù độ dài hay từ vựng chi tiết có thể khác nhau.
 
 **Ví dụ có độ tương tự CAO:**
 - Câu A:
@@ -28,16 +28,16 @@
 - Tại sao khác:
 
 **Tại sao độ tương tự cosine (cosine similarity) được ưu tiên hơn khoảng cách Euclid (Euclidean distance) cho text embeddings?**
-> *Viết 1-2 câu:*
+> Bởi vì cosine similarity chỉ quan tâm đến góc (hướng) giữa hai vector chứ không quan tâm đến độ lớn (magnitude). Văn bản dài và văn bản ngắn về cùng 1 chủ đề sẽ có chung hướng nhưng khoảng cách Euclid sẽ rất xa do độ dài khác nhau.
 
 ### Bài toán tính toán Chunking (Bài tập 1.2)
 
 **Tài liệu 10,000 ký tự, chunk_size=500, overlap=50. Bao nhiêu chunks?**
-> *Trình bày phép tính:*
-> *Đáp án:*
+> *Trình bày phép tính:* `(10000 - 50) / (500 - 50) = 9950 / 450 = 22.11`
+> *Đáp án:* 23 chunks (làm tròn lên).
 
 **Nếu độ chồng chéo (overlap) tăng lên 100, số lượng chunk thay đổi thế nào? Tại sao muốn độ chồng chéo nhiều hơn?**
-> *Viết 1-2 câu:*
+> Nếu overlap = 100, số chunk = 25. Ta muốn overlap nhiều hơn để đảm bảo các câu/ý nằm ở ranh giới giữa các chunk không bị cắt đứt đoạn, giúp LLM giữ được ngữ cảnh liền mạch khi truy xuất.
 
 ---
 
@@ -48,23 +48,23 @@ Giải thích cách tiếp cận của bạn khi lập trình (implement) các p
 ### Các hàm chia nhỏ (Chunking Functions)
 
 **`SentenceChunker.chunk`** — hướng tiếp cận:
-> *Viết 2-3 câu: dùng biểu thức chính quy (regex) gì để phát hiện câu? Xử lý trường hợp ngoại lệ (edge case) nào?*
+> Dùng Regex `re.split` với Positive Lookbehind `(?<=\. )|(?<=\! )` để tách câu nhưng vẫn giữ lại dấu chấm/phẩy. Sau đó lặp qua list câu và nối lại cho đến khi đạt `max_sentences_per_chunk`. Dùng `.strip()` để xóa khoảng trắng thừa.
 
 **`RecursiveChunker.chunk` / `_split`** — hướng tiếp cận:
-> *Viết 2-3 câu: thuật toán hoạt động thế nào? Base case (trường hợp cơ sở) là gì?*
+> Hàm đệ quy nhận vào văn bản hiện tại và list separator. Base case là khi len(text) <= chunk_size hoặc hết separator thì trả về list. Nếu không, cắt theo separator đầu tiên, nối các phần tử lại, phần nào to quá thì gọi đệ quy (recursive call) tiếp.
 
 ### Lớp EmbeddingStore
 
 **`add_documents` + `search`** — hướng tiếp cận:
-> *Viết 2-3 câu: lưu trữ thế nào? Tính độ tương tự ra sao?*
+> Cài đặt cả 2 nhánh: nếu có thư viện `chromadb` thì add/query thẳng qua API của Chroma, nếu không có thì lưu vào 1 List Python Dictionary (in-memory) rồi loop qua List, dùng hàm `_dot` tự viết để xếp hạng.
 
 **`search_with_filter` + `delete_document`** — hướng tiếp cận:
-> *Viết 2-3 câu: lọc (filter) trước hay sau? Xóa bằng cách nào?*
+> Ở in-memory, em dùng vòng lặp for lọc bằng điều kiện (metadata filter == giá trị) trước, mảng nào thỏa mãn mới đem vào `_search_records` để giảm tính toán. Xóa thì gán lại List loại bỏ doc_id.
 
 ### Tác tử KnowledgeBaseAgent
 
 **`answer`** — hướng tiếp cận:
-> *Viết 2-3 câu: cấu trúc prompt? Cách đưa ngữ cảnh (inject context) vào thế nào?*
+> Gọi store `search(question)` để lấy list kết quả, map rút gọn lấy nội dung (content) và `.join("\n\n")`. Đưa khối văn bản khổng lồ đó vào biến `Context:` trong f-string, rồi đẩy tới LLM.
 
 ---
 
@@ -75,10 +75,17 @@ Vượt qua bộ kiểm thử là điều kiện tính điểm phần này.
 ### Kết Quả Kiểm Thử (Test Results)
 
 ```
-# Dán kết quả (output) của: pytest tests/ -v
+============================= test session starts =============================
+platform win32 -- Python 3.12.6, pytest-9.1.1, pluggy-1.6.0
+rootdir: D:\VinUni\K4-Day07-C3-1-E403
+collected 42 items
+
+tests\test_solution.py ........................................ [ 95%]
+..                                                              [100%]
+============================= 42 passed in 0.12s ==============================
 ```
 
-**Số lượng bài test vượt qua (pass):** __ / 42
+**Số lượng bài test vượt qua (pass):** 42 / 42
 
 ---
 
@@ -103,16 +110,16 @@ Chạy **5 câu hỏi đánh giá của nhóm** trên mã nguồn cá nhân củ
 
 | # | Câu hỏi (Query) | Top-1 Chunk truy xuất được (tóm tắt) | Điểm Score | Có liên quan không? (Relevant) | Câu trả lời của Agent (tóm tắt) |
 |---|-------|--------------------------------|-------|-----------|------------------------|
-| 1 | | | | | |
-| 2 | | | | | |
-| 3 | | | | | |
-| 4 | | | | | |
-| 5 | | | | | |
+| 1 | Hành vi điều khiển xe chạy quá tốc độ quy định bị phạt bao nhiêu tiền? | "2. Phạt tiền từ 4.000.000 đồng đến 6.000.000 đồng đối với người điều khiển xe máy chuyên dùng..." | (Giả lập) | Không (vì Mock Embedder) | [LLM giả lập] Đã đọc Context và trả lời câu hỏi. |
+| 2 | Người đi bộ vượt đèn đỏ bị phạt bao nhiêu? | "4. Đối với những hành vi vi phạm quy định về tải trọng..." | (Giả lập) | Không | [LLM giả lập] Đã đọc Context và trả lời câu hỏi. |
+| 3 | (Dùng bộ lọc `category: traffic_law`) Thẩm quyền lập biên bản vi phạm hành chính thuộc về ai? | "2. Phạt tiền từ 400.000 đồng đến 600.000 đồng đối với một trong các hành vi vi phạm sau đây: a) Không chấp hành hiệu lệnh..." | (Giả lập) | Không | [LLM giả lập] Đã đọc Context và trả lời câu hỏi. |
+| 4 | (Dùng bộ lọc `category: traffic_law`) Hình thức xử phạt bổ sung bao gồm những gì? | "1. Phạt tiền từ 1.000.000 đồng đến 2.000.000 đồng đối với hành vi chở quá số người quy định..." | (Giả lập) | Không | [LLM giả lập] Đã đọc Context và trả lời câu hỏi. |
+| 5 | Xe máy điện chở quá số người quy định bị phạt như thế nào? | "2. Phạt tiền từ 2.000.000 đồng đến 3.000.000 đồng đối với hành vi điều khiển xe ô tô kinh doanh vận tải chở trẻ em..." | (Giả lập) | Không | [LLM giả lập] Đã đọc Context và trả lời câu hỏi. |
 
-**Bao nhiêu câu hỏi trả về chunk có liên quan trong top-3?** __ / 5
+**Bao nhiêu câu hỏi trả về chunk có liên quan trong top-3?** 0 / 5 (Do hệ thống đang dùng hàm `_mock_embed` thay vì Text Embeddings thực sự, nên các chunk trả về chưa mang tính chính xác về mặt ngữ nghĩa).
 
 **Điều hay nhất tôi học được từ thành viên khác / nhóm khác (qua demo):**
-> *Viết 2-3 câu:*
+> Nhận ra rằng nếu không có thư viện Embeddings chuẩn (như ChromaDB với mô hình AI thực thụ), thuật toán tính khoảng cách vector ngẫu nhiên hoặc hashing sẽ hoàn toàn vô dụng trong việc tìm kiếm ngữ nghĩa.
 
 ---
 

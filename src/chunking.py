@@ -145,6 +145,26 @@ def compute_similarity(vec_a: list[float], vec_b: list[float]) -> float:
     return dot_product / (mag_a * mag_b)
 
 
+class LawClauseChunker:
+    """
+    Chiến lược Custom (TUANANH): Cắt văn bản theo từng Khoản (vd: "1. ", "2. ") trong văn bản luật.
+    """
+    def chunk(self, text: str) -> list[str]:
+        if not text:
+            return []
+        
+        # Split by Clause pattern: newline followed by a number and a dot, e.g., "\n1. "
+        # Regex uses positive lookahead to keep the number with the content
+        parts = re.split(r'(?=\n\d+\. )', "\n" + text)
+        
+        chunks = []
+        for p in parts:
+            p = p.strip()
+            if p:
+                chunks.append(p)
+                
+        return chunks if chunks else [text]
+
 class ChunkingStrategyComparator:
     """Run all built-in chunking strategies and compare their results."""
 
@@ -152,6 +172,7 @@ class ChunkingStrategyComparator:
         fixed = FixedSizeChunker(chunk_size=chunk_size, overlap=20).chunk(text)
         sentences = SentenceChunker(max_sentences_per_chunk=3).chunk(text)
         recursive = RecursiveChunker(chunk_size=chunk_size).chunk(text)
+        law_clause = LawClauseChunker().chunk(text)
         
         def stats(chunks: list[str]) -> dict:
             if not chunks:
@@ -162,5 +183,6 @@ class ChunkingStrategyComparator:
         return {
             'fixed_size': stats(fixed),
             'by_sentences': stats(sentences),
-            'recursive': stats(recursive)
+            'recursive': stats(recursive),
+            'tuananh_law_clause': stats(law_clause)
         }
