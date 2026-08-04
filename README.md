@@ -38,10 +38,10 @@ pip install -r requirements.txt
 pytest tests/ -v          # Phần lớn bài kiểm thử sẽ THẤT BẠI (chưa được lập trình)
 ```
 
-Mặc định, lab vẫn chạy với trình nhúng giả lập `_mock_embed` nên **không bắt buộc** cài đặt mô hình nhúng (embedder) thật.
+Mặc định, demo K4 chạy với `HashingEmbedder(512)` nên **không bắt buộc** cài đặt mô hình nhúng thật. `_mock_embed` vẫn được giữ riêng cho unit test.
 File `.env` được tự động nạp khi chạy `main.py`. Với các đoạn mã Python (snippet) chạy trực tiếp, hãy dùng lệnh `export` cho các biến môi trường cần thiết hoặc gọi hàm `load_dotenv()` nếu cần.
 
-> **Giai đoạn 2 (so sánh retrieval): đặt `EMBEDDING_PROVIDER=local`** để dùng trình nhúng đa ngữ (mô tả bên dưới). Mock sinh vector xác định nhưng **gần như ngẫu nhiên theo cả chuỗi** — chỉ hợp để chạy unit test, **không phản ánh chất lượng ngữ nghĩa** và không nên dùng để kết luận chiến lược chunking/tiếng Việt nào tốt hơn.
+> `HashingEmbedder` là baseline lexical có thể tái lập, không phải mô hình ngữ nghĩa. Đặt `EMBEDDING_PROVIDER=local` để đánh giá thêm bằng trình nhúng đa ngữ (mô tả bên dưới). Mock sinh vector gần như ngẫu nhiên theo cả chuỗi và chỉ dùng cho unit test.
 
 ## Tùy Chọn Mô Hình Nhúng (Embedding Backend)
 
@@ -88,8 +88,8 @@ export OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 
 ### Quy tắc dự phòng (fallback)
 
-- Nếu không chọn gì, lab mặc định dùng `_mock_embed`
-- Nếu chọn `local` hoặc `openai` nhưng thiết lập bị thiếu, mã nguồn sẽ tự động chuyển về dùng `_mock_embed`
+- Nếu không chọn gì, demo K4 mặc định dùng `HashingEmbedder(512)`
+- Nếu chọn `local` hoặc `openai` nhưng thiết lập bị thiếu, mã nguồn sẽ tự động chuyển về hashing baseline
 - Có thể cấu hình qua file `.env` mà không cần chạy lệnh `source .env`
 - File kịch bản `main.py` chạy từ đầu đến cuối và nhập (import) các API công khai từ gói `src`
 

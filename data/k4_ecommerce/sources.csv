@@ -1,3 +1,8 @@
 doc_id,file_path,title,source_url,retrieved_at,document_version,license_or_permission
-k4-returns-policy,data/k4_ecommerce/returns-policy.md,Chính sách đổi trả,https://example.com/chinh-sach/doi-tra,2026-08-02,2026.1,example-template-replace-me
-k4-seller-listing,data/k4_ecommerce/seller-listing.md,Quy định đăng bán,https://example.com/nguoi-ban/dang-ban,2026-08-02,2026.1,example-template-replace-me
+ecommerce-law-2025,data/k4_ecommerce/ecommerce-law-2025.md,Luật Thương mại điện tử 2025,https://moit.gov.vn/van-ban-phap-luat.html,2026-08-03,122/2025/QH15,official-public-record
+ecommerce-decree-248-2026,data/k4_ecommerce/ecommerce-decree-248-2026.md,Nghị định 248/2026/NĐ-CP,https://vanban.chinhphu.vn/,2026-08-03,248/2026/NĐ-CP,official-public-record
+consumer-rights-2023,data/k4_ecommerce/returns-policy.md,Quyền người tiêu dùng trực tuyến,https://moit.gov.vn/bao-ve-quyen-loi-nguoi-tieu-dung.html,2026-08-03,19/2023/QH15,official-public-record
+platform-responsibilities,data/k4_ecommerce/seller-listing.md,Trách nhiệm nền tảng số trung gian,https://moit.gov.vn/bao-ve-quyen-loi-nguoi-tieu-dung.html,2026-08-03,Luật 19/2023 + NĐ 55/2024,official-public-record
+consumer-negotiation-and-data,data/k4_ecommerce/consumer-negotiation-and-data.md,Thương lượng và bảo vệ thông tin,https://moit.gov.vn/bao-ve-quyen-loi-nguoi-tieu-dung.html,2026-08-03,19/2023/QH15,official-public-record
+personal-data-protection,data/k4_ecommerce/personal-data-protection.md,Bảo vệ dữ liệu cá nhân,https://vanban.chinhphu.vn/?pageid=27160&docid=207759,2026-08-03,13/2023/NĐ-CP,official-public-record
+cross-border-shopping-safety,data/k4_ecommerce/cross-border-shopping-safety.md,An toàn mua sắm xuyên biên giới,https://moit.gov.vn/bao-ve-quyen-loi-nguoi-tieu-dung.html,2026-08-03,cập nhật 2026-08-03,official-public-record

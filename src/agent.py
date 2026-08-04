@@ -17,9 +17,13 @@ class KnowledgeBaseAgent:
         self.store = store
         self.llm_fn = llm_fn
 
-    def answer(self, question: str, top_k: int = 3) -> str:
-        results = self.store.search(question, top_k=top_k)
-        context = "\n\n".join(result["content"] for result in results)
+    def answer(self, question: str, top_k: int = 3, metadata_filter: dict | None = None) -> str:
+        results = self.store.search_with_filter(question, top_k=top_k, metadata_filter=metadata_filter)
+        context = "\n\n".join(
+            f"[Nguồn: {result['metadata'].get('source_url', result['metadata'].get('source', 'không rõ'))}]\n"
+            f"{result['content']}"
+            for result in results
+        )
         prompt = (
             "Answer the question using only the context below. "
             "If the context does not contain the answer, say that you do not know.\n\n"

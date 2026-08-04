@@ -12,6 +12,7 @@ from src.embeddings import (
     EMBEDDING_PROVIDER_ENV,
     LOCAL_EMBEDDING_MODEL,
     OPENAI_EMBEDDING_MODEL,
+    HashingEmbedder,
     LocalEmbedder,
     OpenAIEmbedder,
     _mock_embed,
@@ -21,24 +22,29 @@ from src.embeddings import (
 # Đổi bằng biến môi trường: LAB_DATA_DIR=data/<thu-muc-cua-nhom> python3 main.py
 DEFAULT_DATA_DIR = "data/k4_ecommerce"
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 
 def _select_embedder():
     """Chọn backend nhúng theo biến môi trường EMBEDDING_PROVIDER (mock | local | openai)."""
     load_dotenv(override=False)
-    provider = os.getenv(EMBEDDING_PROVIDER_ENV, "mock").strip().lower()
+    provider = os.getenv(EMBEDDING_PROVIDER_ENV, "hashing").strip().lower()
+    if provider == "hashing":
+        return HashingEmbedder(512)
     if provider == "local":
         try:
             return LocalEmbedder(model_name=os.getenv("LOCAL_EMBEDDING_MODEL", LOCAL_EMBEDDING_MODEL))
         except Exception:
-            print("Local embedder không sẵn sàng; tạm dùng mock.")
-            return _mock_embed
+            print("Local embedder không sẵn sàng; tạm dùng hashing baseline.")
+            return HashingEmbedder(512)
     if provider == "openai":
         try:
             return OpenAIEmbedder(model_name=os.getenv("OPENAI_EMBEDDING_MODEL", OPENAI_EMBEDDING_MODEL))
         except Exception:
-            print("OpenAI embedder không sẵn sàng; tạm dùng mock.")
-            return _mock_embed
-    return _mock_embed
+            print("OpenAI embedder không sẵn sàng; tạm dùng hashing baseline.")
+            return HashingEmbedder(512)
+    return HashingEmbedder(512)
 
 
 def demo_llm(prompt: str) -> str:

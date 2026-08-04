@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import hashlib
 import math
+import re
+import unicodedata
 
 # Multilingual model suitable for the Vietnamese corpora used in this Lab.
 # The local backend remains optional; required checkpoints use MockEmbedder.
@@ -24,6 +26,31 @@ class MockEmbedder:
         for _ in range(self.dim):
             seed = (seed * 1664525 + 1013904223) & 0xFFFFFFFF
             vector.append((seed / 0xFFFFFFFF) * 2 - 1)
+        norm = math.sqrt(sum(value * value for value in vector)) or 1.0
+        return [value / norm for value in vector]
+
+
+class HashingEmbedder:
+    """Deterministic lexical baseline that requires no model download."""
+
+    def __init__(self, dim: int = 512) -> None:
+        if dim <= 0:
+            raise ValueError("dim must be greater than zero")
+        self.dim = dim
+        self._backend_name = f"hashing lexical ({dim} dimensions)"
+
+    @staticmethod
+    def _terms(text: str) -> list[str]:
+        normalized = unicodedata.normalize("NFC", text.lower())
+        tokens = re.findall(r"[\wÀ-ỹ]+", normalized, flags=re.UNICODE)
+        return tokens + [f"{left}::{right}" for left, right in zip(tokens, tokens[1:])]
+
+    def __call__(self, text: str) -> list[float]:
+        vector = [0.0] * self.dim
+        for term in self._terms(text):
+            digest = hashlib.blake2b(term.encode("utf-8"), digest_size=8).digest()
+            value = int.from_bytes(digest, "little")
+            vector[value % self.dim] += 1.0 if value & 1 else -1.0
         norm = math.sqrt(sum(value * value for value in vector)) or 1.0
         return [value / norm for value in vector]
 

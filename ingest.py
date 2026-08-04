@@ -91,6 +91,12 @@ def load_documents(data_dir: str | Path) -> list[Document]:
         if not path.is_file() or path.suffix.lower() not in TEXT_EXTENSIONS:
             continue
         metadata, body = parse_front_matter(path.read_text(encoding="utf-8"))
+        # YAML may coerce ISO dates to ``datetime.date``; vector stores and JSON
+        # evaluation outputs require scalar metadata values.
+        metadata = {
+            key: value if isinstance(value, (str, int, float, bool)) or value is None else str(value)
+            for key, value in metadata.items()
+        }
         doc_id = str(metadata.get("doc_id") or path.stem)
         metadata.setdefault("doc_id", doc_id)
         metadata.setdefault("source", str(path))
